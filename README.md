@@ -1,0 +1,2 @@
+# GolangHW
+course from KBTU
