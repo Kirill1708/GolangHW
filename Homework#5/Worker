@@ -1,0 +1,32 @@
+package main
+
+import (
+  "fmt"
+  "sync"
+)
+
+func worker(id int, wg *sync.WaitGroup, jobs <-chan int, results chan<- int) {
+  for j := range jobs {
+    fmt.Printf("worker №%d started job %d\n", id, j)
+    fmt.Printf("Worker №%d ended job %v\n", id, j)
+    results <- j
+
+  }
+  wg.Done()
+}
+
+func main() {
+  jobs := make(chan int, 12)
+  results := make(chan int, 4)
+
+  var wg sync.WaitGroup
+  wg.Add(4)
+  for i := 1; i <= 4; i++ {
+    go worker(i, &wg, jobs, results)
+  }
+  for j := 1; j <= 4; j++ {
+    jobs <- j
+  }
+  close(jobs)
+  wg.Wait()
+}
